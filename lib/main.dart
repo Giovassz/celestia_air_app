@@ -23,7 +23,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
+        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+        scaffoldBackgroundColor: Colors.grey[100],
       ),
       home: const WelcomeScreen(),
     );
@@ -95,7 +96,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       if (_currentPage < slides.length - 1) {
         _currentPage++;
       } else {
@@ -104,7 +105,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
       _pageController.animateToPage(
         _currentPage,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 800),
         curve: Curves.easeInOut,
       );
     });
@@ -127,7 +128,30 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
             )
           else
-            const Center(child: CircularProgressIndicator()),
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.blue, Colors.blueAccent],
+                ),
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.3),
+                  Colors.black.withOpacity(0.7),
+                ],
+              ),
+            ),
+          ),
           Column(
             children: [
               Expanded(
@@ -140,62 +164,91 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     });
                   },
                   itemBuilder: (context, index) {
-                    return _buildSlide(slides[index]);
+                    return _buildSlide(slides[index], index);
                   },
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(slides.length, (index) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _currentPage == index ? Colors.black : Colors.grey,
-                    ),
-                  );
-                }),
+              FadeInUp(
+                delay: const Duration(milliseconds: 300),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(slides.length, (index) {
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: _currentPage == index ? 24 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color:
+                            _currentPage == index
+                                ? Colors.white
+                                : Colors.white54,
+                      ),
+                    );
+                  }),
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 400),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 56),
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.blue,
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: Colors.black,
-                      ),
-                      child: const Text(
-                        'Iniciar Sesión',
-                        style: TextStyle(color: Colors.white),
+                        ),
+                        child: const Text(
+                          'Iniciar Sesión',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const SignUpScreen(),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 500),
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const SignUpScreen(),
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 56),
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.white, width: 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: Colors.black,
-                      ),
-                      child: const Text(
-                        'Crear Cuenta',
-                        style: TextStyle(color: Colors.white),
+                        ),
+                        child: const Text(
+                          'Crear Cuenta',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -208,33 +261,59 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  Widget _buildSlide(Map<String, String> slide) {
+  Widget _buildSlide(Map<String, String> slide, int index) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset(slide['images']!, width: 300, height: 300),
-        const SizedBox(height: 20),
-        Text(
-          slide['title']!,
-          style: GoogleFonts.lato(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            shadows: [
-              Shadow(color: Colors.black, offset: Offset(2, 2), blurRadius: 3),
-            ],
+        FadeInDown(
+          delay: const Duration(milliseconds: 200),
+          child: Image.asset(
+            slide['images']!,
+            width: 280,
+            height: 280,
+            fit: BoxFit.cover,
           ),
         ),
-        const SizedBox(height: 10),
-        Text(
-          slide['description']!,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.lato(
-            fontSize: 16,
-            color: Colors.white,
-            shadows: [
-              Shadow(color: Colors.black, offset: Offset(2, 2), blurRadius: 3),
-            ],
+        const SizedBox(height: 24),
+        FadeInUp(
+          delay: const Duration(milliseconds: 300),
+          child: Text(
+            slide['title']!,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              shadows: [
+                Shadow(
+                  color: Colors.black45,
+                  offset: Offset(2, 2),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        FadeInUp(
+          delay: const Duration(milliseconds: 400),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text(
+              slide['description']!,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    color: Colors.black45,
+                    offset: Offset(1, 1),
+                    blurRadius: 3,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
@@ -253,113 +332,187 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Iniciar Sesión'),
-        backgroundColor: Colors.blue,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FadeInDown(
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.blue),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
+              const SizedBox(height: 20),
+              FadeInUp(
+                child: Text(
+                  'Bienvenido de vuelta',
+                  style: GoogleFonts.poppins(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue[800],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              FadeInUp(
+                delay: const Duration(milliseconds: 200),
+                child: Text(
+                  'Inicia sesión para continuar',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              FadeInUp(
+                delay: const Duration(milliseconds: 300),
+                child: Card(
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      children: [
+                        ZoomIn(
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            width: 120,
+                            height: 120,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 400),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Correo Electrónico',
+                              prefixIcon: const Icon(
+                                Icons.email,
+                                color: Colors.blue,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 500),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Contraseña',
+                              prefixIcon: const Icon(
+                                Icons.lock,
+                                color: Colors.blue,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            obscureText: true,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 600),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              bool isAuthenticated = await _authenticateUser();
+                              if (isAuthenticated) {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => const FlightSearchScreen(),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Autenticación fallida'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 56),
+                              backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 5,
+                            ),
+                            child: const Text(
+                              'Iniciar Sesión',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 700),
+                          child: TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              '¿Olvidaste tu contraseña?',
+                              style: GoogleFonts.poppins(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              FadeInUp(
+                delay: const Duration(milliseconds: 800),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/logo.png',
-                      width: 150,
-                      height: 150,
+                    Text(
+                      '¿No tienes una cuenta? ',
+                      style: GoogleFonts.poppins(color: Colors.grey[600]),
                     ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Correo Electrónico',
-                        prefixIcon: const Icon(Icons.email),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        prefixIcon: const Icon(Icons.lock),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () async {
-                        bool isAuthenticated = await _authenticateUser();
-                        if (isAuthenticated) {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const FlightSearchScreen(),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Autenticación fallida'),
-                            ),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        'Iniciar Sesión',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        '¿Olvidaste tu contraseña?',
-                        style: TextStyle(color: Colors.blue),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const SignUpScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Regístrate',
+                        style: GoogleFonts.poppins(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('¿No tienes una cuenta? '),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SignUpScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Regístrate',
-                    style: TextStyle(color: Colors.blue),
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -377,115 +530,192 @@ class SignUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Crear Cuenta'),
-        backgroundColor: Colors.blue,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FadeInDown(
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.blue),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
+              const SizedBox(height: 20),
+              FadeInUp(
+                child: Text(
+                  'Crea tu cuenta',
+                  style: GoogleFonts.poppins(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue[800],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              FadeInUp(
+                delay: const Duration(milliseconds: 200),
+                child: Text(
+                  'Únete a Celestial AirLines',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              FadeInUp(
+                delay: const Duration(milliseconds: 300),
+                child: Card(
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      children: [
+                        ZoomIn(
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            width: 120,
+                            height: 120,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 400),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Nombre Completo',
+                              prefixIcon: const Icon(
+                                Icons.person,
+                                color: Colors.blue,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 500),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Correo Electrónico',
+                              prefixIcon: const Icon(
+                                Icons.email,
+                                color: Colors.blue,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 600),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Contraseña',
+                              prefixIcon: const Icon(
+                                Icons.lock,
+                                color: Colors.blue,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            obscureText: true,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        FadeInUp(
+                          delay: const Duration(milliseconds: 700),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              bool isAuthenticated = await _authenticateUser();
+                              if (isAuthenticated) {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => const FlightSearchScreen(),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Error al crear cuenta'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 56),
+                              backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 5,
+                            ),
+                            child: const Text(
+                              'Crear Cuenta',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              FadeInUp(
+                delay: const Duration(milliseconds: 800),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/logo.png',
-                      width: 150,
-                      height: 150,
+                    Text(
+                      '¿Ya tienes una cuenta? ',
+                      style: GoogleFonts.poppins(color: Colors.grey[600]),
                     ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Nombre Completo',
-                        prefixIcon: const Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Correo Electrónico',
-                        prefixIcon: const Icon(Icons.email),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        prefixIcon: const Icon(Icons.lock),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () async {
-                        bool isAuthenticated = await _authenticateUser();
-                        if (isAuthenticated) {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const FlightSearchScreen(),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Error al crear cuenta'),
-                            ),
-                          );
-                        }
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
                       },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      child: Text(
+                        'Inicia Sesión',
+                        style: GoogleFonts.poppins(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      child: const Text(
-                        'Crear Cuenta',
-                        style: TextStyle(fontSize: 16),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('¿Ya tienes una cuenta? '),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Inicia Sesión',
-                    style: TextStyle(color: Colors.blue),
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -575,6 +805,20 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
       initialDate: now,
       firstDate: firstDate,
       lastDate: lastDate,
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
@@ -595,7 +839,7 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
           return FlightDetailsScreen(flight: flight);
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0.0, 1.0);
+          const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
           const curve = Curves.easeInOut;
           var tween = Tween(
@@ -616,48 +860,101 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            title: const Text('Buscar Vuelos'),
-            backgroundColor: Colors.blue,
+            title: Text(
+              'Buscar Vuelos',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.blue[800],
             floating: true,
             pinned: true,
+            expandedHeight: 120,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.blue[800]!, Colors.blue[600]!],
+                  ),
+                ),
+              ),
+            ),
           ),
           SliverToBoxAdapter(
-            child: Container(
-              color: Colors.lightBlue,
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  _buildCityDropdown(_originController, 'Ciudad de Origen'),
-                  const SizedBox(height: 16),
-                  _buildCityDropdown(
-                    _destinationController,
-                    'Ciudad de Destino',
+            child: FadeInUp(
+              child: Container(
+                padding: const EdgeInsets.all(20.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(20),
                   ),
-                  const SizedBox(height: 16),
-                  _buildPassengerSelector(),
-                  const SizedBox(height: 16),
-                  _buildDateSelectors(),
-                  const SizedBox(height: 16),
-                  _buildSearchButton(),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 5,
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 200),
+                      child: _buildCityDropdown(
+                        _originController,
+                        'Ciudad de Origen',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 300),
+                      child: _buildCityDropdown(
+                        _destinationController,
+                        'Ciudad de Destino',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 400),
+                      child: _buildPassengerSelector(),
+                    ),
+                    const SizedBox(height: 16),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 500),
+                      child: _buildDateSelectors(),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 600),
+                      child: _buildSearchButton(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-              return GestureDetector(
-                onTap: () => _navigateToFlightDetails(flights[index]),
-                child: _buildFlightCard(flights[index]),
+              return FadeInUp(
+                delay: Duration(milliseconds: 200 * index),
+                child: GestureDetector(
+                  onTap: () => _navigateToFlightDetails(flights[index]),
+                  child: _buildFlightCard(flights[index]),
+                ),
               );
             }, childCount: flights.length),
           ),
           SliverToBoxAdapter(
             child: Column(
               children: [
-                const SizedBox(height: 16),
-                _buildPromotionsSection(),
-                const SizedBox(height: 16),
-                _buildComplementosSection(),
+                const SizedBox(height: 24),
+                FadeInUp(child: _buildPromotionsSection()),
+                const SizedBox(height: 24),
+                FadeInUp(
+                  delay: const Duration(milliseconds: 200),
+                  child: _buildComplementosSection(),
+                ),
               ],
             ),
           ),
@@ -666,11 +963,18 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.flight_takeoff),
+            label: 'Buscar',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.airplane_ticket),
-            label: 'Tus Viajes',
+            label: 'Viajes',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
@@ -691,7 +995,13 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        prefixIcon: const Icon(Icons.location_on, color: Colors.blue),
+        filled: true,
+        fillColor: Colors.grey[100],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
       ),
       items:
           cities.map((String city) {
@@ -708,27 +1018,39 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
   Widget _buildPassengerSelector() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Pasajeros:'),
+          Text(
+            'Pasajeros',
+            style: GoogleFonts.poppins(color: Colors.grey[600]),
+          ),
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.remove),
+                icon: const Icon(
+                  Icons.remove_circle_outline,
+                  color: Colors.blue,
+                ),
                 onPressed: () {
                   setState(() {
                     if (_passengerCount > 1) _passengerCount--;
                   });
                 },
               ),
-              Text('$_passengerCount'),
+              Text(
+                '$_passengerCount',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               IconButton(
-                icon: const Icon(Icons.add),
+                icon: const Icon(Icons.add_circle_outline, color: Colors.blue),
                 onPressed: () {
                   setState(() {
                     _passengerCount++;
@@ -748,10 +1070,19 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
         Expanded(
           child: ElevatedButton(
             onPressed: () => _selectDate(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey[100],
+              foregroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
             child: Text(
               _departureDate == null
-                  ? 'Seleccionar Ida'
-                  : 'Ida: ${DateFormat('dd/MM/yyyy').format(_departureDate!)}',
+                  ? 'Ida'
+                  : DateFormat('dd MMM yyyy').format(_departureDate!),
+              style: GoogleFonts.poppins(fontSize: 14),
             ),
           ),
         ),
@@ -759,10 +1090,19 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
         Expanded(
           child: ElevatedButton(
             onPressed: () => _selectDate(context, false),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey[100],
+              foregroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
             child: Text(
               _returnDate == null
-                  ? 'Seleccionar Regreso'
-                  : 'Regreso: ${DateFormat('dd/MM/yyyy').format(_returnDate!)}',
+                  ? 'Regreso'
+                  : DateFormat('dd MMM yyyy').format(_returnDate!),
+              style: GoogleFonts.poppins(fontSize: 14),
             ),
           ),
         ),
@@ -774,45 +1114,64 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        minimumSize: const Size(double.infinity, 50),
+        minimumSize: const Size(double.infinity, 56),
+        backgroundColor: Colors.blue,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 5,
       ),
-      child: const Text('Buscar Vuelos'),
+      child: Text(
+        'Buscar Vuelos',
+        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
     );
   }
 
   Widget _buildPromotionsSection() {
     final List<String> promotions = [
       '20% de descuento en vuelos a Europa',
-      '15% de descuento a las vegas si conoces a Chug',
+      '15% de descuento a Las Vegas',
       'Ofertas especiales para grupos',
     ];
 
     return Container(
-      height: 100,
+      height: 120,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: PageView.builder(
-        controller: PageController(viewportFraction: 0.8),
+        controller: PageController(viewportFraction: 0.85),
         scrollDirection: Axis.horizontal,
         itemCount: promotions.length,
         itemBuilder: (context, index) {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
+          return BounceInRight(
+            delay: Duration(milliseconds: 200 * index),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue[700]!, Colors.blue[500]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                promotions[index],
-                style: const TextStyle(fontSize: 16),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  promotions[index],
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ),
           );
@@ -822,32 +1181,52 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
   }
 
   Widget _buildComplementosSection() {
-    final List<String> complementos = [
-      'Equipaje adicional',
-      'Selección de asiento',
-      'Comida a bordo',
-      'Seguro de viaje',
+    final List<Map<String, dynamic>> complementos = [
+      {'title': 'Equipaje adicional', 'icon': Icons.luggage},
+      {'title': 'Selección de asiento', 'icon': Icons.event_seat},
+      {'title': 'Comida a bordo', 'icon': Icons.restaurant},
+      {'title': 'Seguro de viaje', 'icon': Icons.shield},
     ];
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Complementos:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            'Complementos',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue[800],
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: complementos.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(complementos[index]),
-                trailing: const Icon(Icons.add),
-                onTap: () {},
+              return FadeInUp(
+                delay: Duration(milliseconds: 200 * index),
+                child: Card(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    leading: Icon(
+                      complementos[index]['icon'],
+                      color: Colors.blue,
+                    ),
+                    title: Text(
+                      complementos[index]['title'],
+                      style: GoogleFonts.poppins(),
+                    ),
+                    trailing: const Icon(Icons.add_circle, color: Colors.blue),
+                    onTap: () {},
+                  ),
+                ),
               );
             },
           ),
@@ -858,38 +1237,77 @@ class _FlightSearchScreenState extends State<FlightSearchScreen> {
 
   Widget _buildFlightCard(Map<String, dynamic> flight) {
     return Card(
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 5,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
               child: Image.asset(
                 flight['image'],
                 width: double.infinity,
-                height: 150,
+                height: 180,
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              '${flight['origin']} → ${flight['destination']}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${flight['origin']}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Icon(Icons.flight, color: Colors.blue, size: 20),
+                Text(
+                  '${flight['destination']}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
-            Text('Fecha: ${flight['date']}'),
             Text(
-              'Precio: \$${flight['price']}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              'Fecha: ${flight['date']}',
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () {
-                _navigateToFlightDetails(flight);
-              },
-              child: const Text('Ver Detalles'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '\$${flight['price']}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[700],
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _navigateToFlightDetails(flight);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'Reservar',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -911,130 +1329,194 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalles del Vuelo'),
-        backgroundColor: Colors.blue,
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.blue, width: 2),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.blue.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                FadeInDown(
-                  child: SizedBox(
-                    height: 200,
-                    child: PageView(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            widget.flight['image'],
-                            width: double.infinity,
-                            height: 200,
-                            fit: BoxFit.cover,
-                          ),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              expandedHeight: 250,
+              floating: false,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  '${widget.flight['origin']} → ${widget.flight['destination']}',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    shadows: [Shadow(color: Colors.black45, blurRadius: 4)],
+                  ),
+                ),
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(widget.flight['image'], fit: BoxFit.cover),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.7),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                FadeInLeft(
-                  delay: const Duration(milliseconds: 200),
-                  child: Text(
-                    'Origen: ${widget.flight['origin']}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                FadeInLeft(
-                  delay: const Duration(milliseconds: 300),
-                  child: Text(
-                    'Destino: ${widget.flight['destination']}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                FadeInLeft(
-                  delay: const Duration(milliseconds: 400),
-                  child: Text(
-                    'Fecha: ${widget.flight['date']}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                FadeInLeft(
-                  delay: const Duration(milliseconds: 500),
-                  child: Text(
-                    'Precio: \$${widget.flight['price']}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                FadeInLeft(
-                  delay: const Duration(milliseconds: 600),
-                  child: Text(
-                    'Disponibilidad: ${widget.flight['availability']} asientos',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                FadeInLeft(
-                  delay: const Duration(milliseconds: 700),
-                  child: Text(
-                    'Detalles: ${widget.flight['details']}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                BounceInUp(
-                  delay: const Duration(milliseconds: 800),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _showPurchaseDialog(context, widget.flight);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Comprar Vuelo',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                  ],
+                ),
+              ),
+              backgroundColor: Colors.blue[800],
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ];
+        },
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FadeInUp(
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.flight_takeoff,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Origen: ${widget.flight['origin']}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 200),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.flight_land, color: Colors.blue),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Destino: ${widget.flight['destination']}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 300),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.calendar_today,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Fecha: ${widget.flight['date']}',
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 400),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.attach_money, color: Colors.green),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Precio: \$${widget.flight['price']}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 500),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.event_seat, color: Colors.blue),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Disponibilidad: ${widget.flight['availability']} asientos',
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 600),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.info_outline, color: Colors.blue),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Detalles: ${widget.flight['details']}',
+                                style: GoogleFonts.poppins(fontSize: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              FadeInUp(
+                delay: const Duration(milliseconds: 700),
+                child: ElevatedButton(
+                  onPressed: () {
+                    _showPurchaseDialog(context, widget.flight);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 56),
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 5,
+                  ),
+                  child: Text(
+                    'Comprar Vuelo',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -1053,42 +1535,67 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
           builder: (context, setState) {
             return AlertDialog(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(20),
               ),
-              title: const Text('Comprar Vuelo'),
+              title: Text(
+                'Confirmar Compra',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+              ),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      '¿Deseas comprar el vuelo de ${flight['origin']} a ${flight['destination']} por \$${flight['price']}?',
+                    FadeInUp(
+                      child: Text(
+                        'Vuelo de ${flight['origin']} a ${flight['destination']}',
+                        style: GoogleFonts.poppins(),
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre Completo',
-                        border: OutlineInputBorder(),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 200),
+                      child: TextField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Nombre Completo',
+                          prefixIcon: const Icon(Icons.person),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Correo Electrónico',
-                        border: OutlineInputBorder(),
+                    const SizedBox(height: 12),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 300),
+                      child: TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Correo Electrónico',
+                          prefixIcon: const Icon(Icons.email),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
                       ),
-                      keyboardType: TextInputType.emailAddress,
                     ),
-                    const SizedBox(height: 8),
-                    CheckboxListTile(
-                      title: const Text('¿Deseas agregar seguro de viaje?'),
-                      value: addInsurance,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          addInsurance = value ?? false;
-                        });
-                      },
+                    const SizedBox(height: 12),
+                    FadeInUp(
+                      delay: const Duration(milliseconds: 400),
+                      child: CheckboxListTile(
+                        title: Text(
+                          'Agregar seguro de viaje (+ \$50)',
+                          style: GoogleFonts.poppins(),
+                        ),
+                        value: addInsurance,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            addInsurance = value ?? false;
+                          });
+                        },
+                        activeColor: Colors.blue,
+                      ),
                     ),
                   ],
                 ),
@@ -1098,7 +1605,10 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('Cancelar'),
+                  child: Text(
+                    'Cancelar',
+                    style: GoogleFonts.poppins(color: Colors.grey),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -1107,6 +1617,7 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Por favor completa todos los campos'),
+                          backgroundColor: Colors.red,
                         ),
                       );
                       return;
@@ -1126,10 +1637,20 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                         content: Text(
                           'Compra realizada con éxito. Revisa tu correo.',
                         ),
+                        backgroundColor: Colors.green,
                       ),
                     );
                   },
-                  child: const Text('Confirmar Compra'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'Confirmar',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             );
@@ -1184,8 +1705,7 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
         Origen: ${flight['origin']}
         Destino: ${flight['destination']}
         Fecha: ${flight['date']}
-        Precio: \$${flight['price']}
-        ${withInsurance ? 'Incluye seguro de viaje' : 'Sin seguro de viaje'}
+        Precio: \$${flight['price']}${withInsurance ? ' + \$50 (seguro)' : ''}
 
         ¡Esperamos que disfrutes tu viaje!
         Celestial AirLines
@@ -1203,11 +1723,7 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
       print('Error al enviar el correo: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'No se pudo enviar el correo. Error: $e. Verifica tu conexión o la configuración.',
-            ),
-          ),
+          SnackBar(content: Text('No se pudo enviar el correo. Error: $e.')),
         );
       }
     }
@@ -1220,13 +1736,31 @@ class YourTripsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tus Viajes')),
+      appBar: AppBar(
+        title: Text(
+          'Tus Viajes',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.blue[800],
+      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         children: [
-          _buildTripCard('Ciudad de México', 'Las Vegas', '2023-12-15'),
-          _buildTripCard('Madrid', 'París', '2023-12-20'),
-          _buildTripCard('Buenos Aires', 'Venecia', '2023-12-25'),
+          FadeInUp(
+            child: _buildTripCard(
+              'Ciudad de México',
+              'Las Vegas',
+              '2023-12-15',
+            ),
+          ),
+          FadeInUp(
+            delay: const Duration(milliseconds: 200),
+            child: _buildTripCard('Madrid', 'París', '2023-12-20'),
+          ),
+          FadeInUp(
+            delay: const Duration(milliseconds: 400),
+            child: _buildTripCard('Buenos Aires', 'Venecia', '2023-12-25'),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -1249,11 +1783,18 @@ class YourTripsScreen extends StatelessWidget {
               break;
           }
         },
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.flight_takeoff),
+            label: 'Buscar',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.airplane_ticket),
-            label: 'Tus Viajes',
+            label: 'Viajes',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
@@ -1263,18 +1804,41 @@ class YourTripsScreen extends StatelessWidget {
 
   Widget _buildTripCard(String origin, String destination, String date) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 5,
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              '$origin → $destination',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            const Icon(Icons.flight, color: Colors.blue, size: 40),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$origin → $destination',
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Fecha: $date',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            Text('Fecha: $date'),
+            IconButton(
+              icon: const Icon(Icons.info_outline, color: Colors.blue),
+              onPressed: () {},
+            ),
           ],
         ),
       ),
@@ -1288,41 +1852,113 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Perfil')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage('assets/images/perfilft.png'),
+              FadeInDown(
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundImage: const AssetImage(
+                    'assets/images/perfilft.png',
+                  ),
+                  backgroundColor: Colors.blue[100],
+                ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'El Maiki',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              const SizedBox(height: 20),
+              FadeInUp(
+                child: Text(
+                  'El Maiki',
+                  style: GoogleFonts.poppins(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue[800],
+                  ),
+                ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'siganmeeninsta@gmail.com',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+              FadeInUp(
+                delay: const Duration(milliseconds: 200),
+                child: Text(
+                  'siganmeeninsta@gmail.com',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              FadeInUp(
+                delay: const Duration(milliseconds: 300),
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 56),
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 5,
+                  ),
+                  child: Text(
+                    'Editar Perfil',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Editar Perfil'),
+              FadeInUp(
+                delay: const Duration(milliseconds: 400),
+                child: OutlinedButton(
+                  onPressed: () {},
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 56),
+                    side: const BorderSide(color: Colors.blue, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Historial de Compras',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Historial de Compras'),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Cerrar Sesión'),
+              FadeInUp(
+                delay: const Duration(milliseconds: 500),
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => const WelcomeScreen(),
+                      ),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 56),
+                    side: const BorderSide(color: Colors.red, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Cerrar Sesión',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -1350,11 +1986,18 @@ class ProfileScreen extends StatelessWidget {
               break;
           }
         },
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.flight_takeoff),
+            label: 'Buscar',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.airplane_ticket),
-            label: 'Tus Viajes',
+            label: 'Viajes',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
